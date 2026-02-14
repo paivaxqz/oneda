@@ -18,4 +18,4 @@ if __name__ == "__main__":
     
     # Start web server (this blocks)
     print("[*] Starting web server...")
-    os.execvp("gunicorn", ["gunicorn", "-w", "4", "-b", "0.0.0.0:8080", "web:app"])
+    subprocess.run([sys.executable, "-m", "gunicorn", "-w", "4", "-b", "0.0.0.0:8080", "web:app"])
