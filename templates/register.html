@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 350px;
+            padding: 20px;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-align: center;
+            letter-spacing: -0.5px;
+        }
+
+        p {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #fff;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #fff;
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #e0e0e0;
+        }
+
+        .footer {
+            margin-top: 24px;
+            font-size: 13px;
+            color: #666;
+            text-align: center;
+        }
+
+        a {
+            color: #888;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+        .flash {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 24px;
+            font-size: 13px;
+            text-align: center;
+            background: #111;
+            border: 1px solid #333;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h2>Join Network</h2>
+        <p>Enter your invite key to get started.</p>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="flash">{{ messages[0] }}</div>
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <input type="text" name="invite_key" placeholder="Invite Key (INVITE-XXXX)" required autofocus
+                autocomplete="off">
+            <input type="text" name="username" placeholder="Username" required autocomplete="off">
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Create Account</button>
+        </form>
+
+        <div class="footer">
+            Already have an account? <a href="{{ url_for('login') }}">Sign In</a>
+        </div>
+    </div>
+</body>
+
+</html>

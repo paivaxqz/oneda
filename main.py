@@ -6,9 +6,10 @@ import websockets
 import sys
 import os
 
-# CONFIGURATION - Use variáveis de ambiente ou edite aqui
-TOKEN = os.getenv("DISCORD_TOKEN", "SEU_TOKEN_AQUI")
-CATEGORY_ID = os.getenv("CATEGORY_ID", "SEU_CATEGORY_ID_AQUI")
+# CONFIGURATION - Use variáveis de ambiente
+TOKEN = os.getenv("DISCORD_TOKEN")
+# Categories separated by comma
+CATEGORY_IDS = os.getenv("CATEGORY_ID", "").replace(" ", "").split(",")
 RESPONSE_MSG = os.getenv("RESPONSE_MSG", "Olá! Como posso ajudar você hoje?")
 
 # API URLS
@@ -16,9 +17,9 @@ GATEWAY_URL = "wss://gateway.discord.gg/?v=10&encoding=json"
 API_BASE = "https://discord.com/api/v10"
 
 class MaxPerformanceBot:
-    def __init__(self, token, category_id, message):
+    def __init__(self, token, category_ids, message):
         self.token = token
-        self.category_id = str(category_id)
+        self.category_ids = set(category_ids) # O(1) lookup
         self.message = message
         self.session = None
         self.processed = set()
@@ -32,6 +33,10 @@ class MaxPerformanceBot:
         self.payload = json.dumps({"content": self.message}).encode('utf-8')
 
     async def start(self):
+        if not self.token:
+            print("[!] Token não configurado.")
+            return
+
         # Conector ultra-agressivo
         connector = aiohttp.TCPConnector(
             limit=0,
@@ -51,20 +56,22 @@ class MaxPerformanceBot:
 
     async def connect_gateway(self):
         async with websockets.connect(GATEWAY_URL, max_size=None, ping_interval=None) as ws:
-            print(f"[*] MODO MÁXIMO ATIVO")
+            print(f"[*] BOT ONLINE EM {len(self.category_ids)} CATEGORIAS")
             
-            cat_id = self.category_id
             json_loads = json.loads
             create_task = asyncio.create_task
 
             async for message in ws:
                 # DETECÇÃO ULTRA-RÁPIDA
-                if cat_id in message and '"t":"CHANNEL_CREATE"' in message:
+                if '"t":"CHANNEL_CREATE"' in message:
                     try:
                         data = json_loads(message)
                         if data.get('t') == 'CHANNEL_CREATE':
                             d = data['d']
-                            if str(d.get('parent_id')) == cat_id:
+                            parent_id = str(d.get('parent_id'))
+                            
+                            # Verifica se o pai é uma das categorias monitoradas
+                            if parent_id in self.category_ids:
                                 cid = d['id']
                                 # PROTEÇÃO ABSOLUTA CONTRA DUPLICATAS
                                 if cid not in self.processed:
@@ -119,7 +126,7 @@ class MaxPerformanceBot:
                 "properties": {"os": "Windows", "browser": "Chrome", "device": ""},
                 "compress": False,
                 "large_threshold": 50,
-                "intents": 513  # GUILDS + GUILD_MESSAGES
+                "intents": 513
             }
         }))
 
@@ -130,6 +137,6 @@ class MaxPerformanceBot:
             except: break
 
 if __name__ == "__main__":
-    bot = MaxPerformanceBot(TOKEN, CATEGORY_ID, RESPONSE_MSG)
+    bot = MaxPerformanceBot(TOKEN, CATEGORY_IDS, RESPONSE_MSG)
     try: asyncio.run(bot.start())
     except KeyboardInterrupt: pass

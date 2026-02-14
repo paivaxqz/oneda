@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background: #000;
+            color: #fff;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+        }
+
+        .card {
+            background: #000;
+            border: 1px solid #333;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        button {
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #e0e0e0;
+        }
+
+        .key-display {
+            background: #111;
+            border: 1px solid #333;
+            padding: 16px;
+            margin-top: 16px;
+            font-family: monospace;
+            font-size: 16px;
+            color: #0f0;
+            text-align: center;
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            color: #888;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 12px 0;
+            border-bottom: 1px solid #222;
+        }
+
+        th {
+            font-weight: 500;
+            color: #444;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .used {
+            color: #f00;
+        }
+
+        .unused {
+            color: #0f0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Admin Control</h1>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div style="margin-bottom: 20px; color: #0f0; font-size: 14px;">{{ messages[0] }}</div>
+        {% endif %}
+        {% endwith %}
+
+        <div class="card">
+            <h3 style="margin-top: 0; font-size: 14px; color: #888; font-weight: 500;">GENERATE NEW KEY</h3>
+            <form method="POST">
+                <input type="hidden" name="generate" value="true">
+                <button type="submit">Create Invite Key</button>
+            </form>
+
+            {% if generated_key %}
+            <div class="key-display">
+                {{ generated_key }}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h3 style="margin-top: 0; font-size: 14px; color: #888; font-weight: 500; margin-bottom: 16px;">RECENT KEYS
+            </h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Key</th>
+                        <th>Status</th>
+                        <th>Used By</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for key in keys %}
+                    <tr>
+                        <td style="font-family: monospace;">{{ key['key'] }}</td>
+                        <td class="{{ 'used' if key['is_used'] else 'unused' }}">
+                            {{ 'USED' if key['is_used'] else 'ACTIVE' }}
+                        </td>
+                        <td>{{ key['used_by'] or '-' }}</td>
+                        <td>{{ key['created_at'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>

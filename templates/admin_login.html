@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Access</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 350px;
+            padding: 20px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background: #0a0a0a;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #fca5a5;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: #fff;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #fca5a5;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #fca5a5;
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #fee2e2;
+        }
+
+        .flash {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            text-align: center;
+            background: #111;
+            border: 1px solid #333;
+            color: #fca5a5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h2>RESTRICTED AREA</h2>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="flash">{{ messages[0] }}</div>
+        {% endif %}
+        {% endwith %}
+        <form method="POST">
+            <input type="text" name="admin_user" placeholder="ADMIN USERNAME" required autofocus autocomplete="off">
+            <input type="password" name="admin_pass" placeholder="ADMIN PASSWORD" required>
+            <button type="submit">Verify Identity</button>
+        </form>
+    </div>
+</body>
+
+</html>

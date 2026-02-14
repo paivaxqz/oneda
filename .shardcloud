@@ -1,5 +1,8 @@
-DISPLAY_NAME=UltraFast-Ticket
-DESCRIPTION=High speed Discord Ticket Responder
-MAIN=main.py
-MEMORY=128
+DISPLAY_NAME=UltraFast-Secure-Panel
+DESCRIPTION=High Speed Ticket Bot with Dashboard
+MAIN=web.py
+MEMORY=512
 VERSION=LATEST
+START=python manager.py & gunicorn -w 4 -b 0.0.0.0:8080 web:app
+ENV:ADMIN_USERNAME=mendes
+ENV:ADMIN_PASSWORD=78554754

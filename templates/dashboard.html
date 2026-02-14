@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #222;
+        }
+
+        .logo {
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 14px;
+            color: #888;
+        }
+
+        .logout {
+            color: #666;
+            text-decoration: none;
+        }
+
+        .logout:hover {
+            color: #fff;
+        }
+
+        .card {
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 32px;
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding: 16px;
+            background: #111;
+            border-radius: 6px;
+            border: 1px solid #222;
+        }
+
+        .status-label {
+            font-size: 14px;
+            color: #888;
+            font-weight: 500;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .active {
+            color: #22c55e;
+        }
+
+        .active .dot {
+            background: #22c55e;
+        }
+
+        .inactive {
+            color: #666;
+        }
+
+        .inactive .dot {
+            background: #666;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #666;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            line-height: 1.5;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #555;
+            margin-top: 6px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: #fff;
+            color: #000;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-toggle {
+            border: none;
+        }
+
+        .btn-start {
+            background: #166534;
+            color: #dcfce7;
+        }
+
+        .btn-start:hover {
+            background: #15803d;
+        }
+
+        .btn-stop {
+            background: #991b1b;
+            color: #fee2e2;
+        }
+
+        .btn-stop:hover {
+            background: #b91c1c;
+        }
+
+        .flash {
+            background: #111;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 24px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">ONEDA</div>
+            <div class="user-info">
+                <span>{{ current_user.username }}</span>
+                <a href="{{ url_for('logout') }}" class="logout">Log Out</a>
+            </div>
+        </header>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="flash">{{ messages[0] }}</div>
+        {% endif %}
+        {% endwith %}
+
+        <div class="card">
+            <div class="status-bar">
+                <span class="status-label">Bot Status</span>
+                {% if bot['is_active'] %}
+                <div class="status-indicator active">
+                    <div class="dot"></div> Online
+                </div>
+                {% else %}
+                <div class="status-indicator inactive">
+                    <div class="dot"></div> Offline
+                </div>
+                {% endif %}
+            </div>
+
+            <form action="{{ url_for('update_bot') }}" method="POST">
+                <div class="form-group">
+                    <label>Discord Token</label>
+                    <input type="password" name="token" value="{{ bot['discord_token'] or '' }}" placeholder="Bot Token"
+                        required autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label>Category IDs</label>
+                    <input type="text" name="categories" value="{{ bot['category_ids'] or '' }}"
+                        placeholder="Category IDs" required>
+                    <div class="hint">Comma separated</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Auto-Response</label>
+                    <textarea name="message" placeholder="Response Message">{{ bot['response_msg'] or '' }}</textarea>
+                </div>
+
+                <div class="buttons">
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                    <!-- Toggle Button handled by form redirection or JS, simple form here -->
+                </div>
+            </form>
+
+            <form action="{{ url_for('toggle_bot') }}" method="POST" style="margin-top: 12px;">
+                {% if bot['is_active'] %}
+                <button type="submit" class="btn-toggle btn-stop" style="width: 100%;">Stop Bot</button>
+                {% else %}
+                <button type="submit" class="btn-toggle btn-start" style="width: 100%;">Start Bot</button>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
