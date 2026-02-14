@@ -1,0 +1,5 @@
+DISPLAY_NAME=UltraFast-Ticket
+DESCRIPTION=High speed Discord Ticket Responder
+MAIN=main.py
+MEMORY=128
+VERSION=LATEST
