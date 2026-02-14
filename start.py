@@ -5,7 +5,6 @@ Starts both the manager (bot spawner) and web server.
 """
 import subprocess
 import sys
-import os
 
 if __name__ == "__main__":
     # Initialize database if needed
@@ -14,8 +13,9 @@ if __name__ == "__main__":
     
     # Start manager in background
     print("[*] Starting bot manager...")
-    manager_proc = subprocess.Popen([sys.executable, "manager.py"])
+    subprocess.Popen([sys.executable, "manager.py"])
     
-    # Start web server (this blocks)
+    # Start web server (import and run Flask directly)
     print("[*] Starting web server...")
-    subprocess.run([sys.executable, "-m", "gunicorn", "-w", "4", "-b", "0.0.0.0:8080", "web:app"])
+    from web import app
+    app.run(host='0.0.0.0', port=8080, debug=False)
